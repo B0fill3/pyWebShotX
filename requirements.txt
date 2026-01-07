@@ -1,0 +1,5 @@
+playwright
+typer
+jinja2
+rich
+webtech

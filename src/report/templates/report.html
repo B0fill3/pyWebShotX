@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pyWebShotX Scan Report</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bs-font-sans-serif: 'Inter', system-ui, -apple-system, sans-serif;
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+        }
+        
+        body {
+            font-family: var(--bs-font-sans-serif);
+            background-color: #f8f9fc;
+            color: var(--primary-color);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1 {
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #1a1a1a;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .screenshot-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px; /* Fixed height for uniformity */
+            overflow: hidden;
+            background-color: #f1f3f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .screenshot-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Crops image to fill container cleanly */
+            object-position: top; /* Focus on top of the site */
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .screenshot-img {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .card-subtitle a {
+            color: inherit;
+            transition: color 0.2s;
+        }
+        
+        .card-subtitle a:hover {
+            color: var(--accent-color);
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25em 0.6em;
+            border-radius: 6px;
+        }
+        .status-200 { background-color: #d1fae5; color: #065f46; }
+        .status-3xx { background-color: #e0f2fe; color: #0369a1; }
+        .status-404 { background-color: #fee2e2; color: #991b1b; }
+        .status-500 { background-color: #ffedd5; color: #9a3412; }
+        .status-other { background-color: #f3f4f6; color: #4b5563; }
+
+        .tech-badge {
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 0.35em 0.8em;
+            border-radius: 50rem; /* Pill shape */
+            background-color: #e9ecef;
+            color: #495057;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            border-top: 1px solid #eaeaea;
+            color: #6c757d;
+        }
+        
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <header class="text-center mb-5">
+            <h1>pyWebShotX Report</h1>
+            <p class="text-muted">Automated reconnaissance results</p>
+        </header>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for item in results %}
+            <div class="col">
+                <div class="card">
+                    <div class="screenshot-wrapper">
+                        {% if item.screenshot_path %}
+                        <a href="{{ item.final_url or item.url }}" target="_blank" class="d-block w-100 h-100">
+                            <img src="{{ item.screenshot_path }}" class="screenshot-img" alt="Screenshot of {{ item.url }}">
+                        </a>
+                        {% else %}
+                        <div class="text-muted d-flex flex-column align-items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-camera-video-off mb-2" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l.714 1H9.5a1 1 0 0 1 1 1v6a1 1 0 0 1-.144.518l.605.847zM1.428 4.18A.999.999 0 0 0 1 5v6a1 1 0 0 0 1 1h6.092l.276.393a.25.25 0 0 1-.039.318l-1.455 1.455a.25.25 0 0 1-.354 0L2.354 10.354a.25.25 0 0 1-.068-.135l-1.879-6.039z"/>
+                              <path d="M9.828 4L2.173 15.637 13.637 4.172 9.828 4z"/>
+                              <path fill-rule="evenodd" d="M13.828 2.172a.5.5 0 0 1 .707 0l1.414 1.414a.5.5 0 0 1 0 .707L4.172 16.096a.5.5 0 0 1-.707 0L2.051 14.682a.5.5 0 0 1 0-.707L13.828 2.172z"/>
+                            </svg>
+                            <small>No Preview</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title text-truncate me-2" style="max-width: 70%;" title="{{ item.title }}">
+                                {{ item.title or 'No Title' }}
+                            </h5>
+                            {% set status_class = 'status-other' %}
+                            {% if item.status >= 200 and item.status < 300 %}
+                                {% set status_class = 'status-200' %}
+                            {% elif item.status >= 300 and item.status < 400 %}
+                                {% set status_class = 'status-3xx' %}
+                            {% elif item.status == 404 %}
+                                {% set status_class = 'status-404' %}
+                            {% elif item.status >= 500 %}
+                                {% set status_class = 'status-500' %}
+                            {% endif %}
+                            <span class="status-badge {{ status_class }}">
+                                {{ item.status }}
+                            </span>
+                        </div>
+
+                        <h6 class="card-subtitle mb-3 text-truncate">
+                            <a href="{{ item.final_url or item.url }}" target="_blank" title="{{ item.url }}">
+                                {{ item.url }}
+                            </a>
+                            {% if item.status >= 300 and item.status < 400 and item.final_url %}
+                            <div class="mt-1 small" style="font-size: 0.75rem; color: #6c757d;">
+                                <span class="fw-bold">Redirected to:</span> 
+                                <a href="{{ item.final_url }}" target="_blank" class="text-decoration-none text-muted" style="word-break: break-all; white-space: normal;">{{ item.final_url }}</a>
+                            </div>
+                            {% endif %}
+                        </h6>
+                        
+                        {% if item.error %}
+                        <div class="alert alert-danger py-1 px-2 mb-3" style="font-size: 0.75rem; border-radius: 6px;">
+                            {{ item.error }}
+                        </div>
+                        {% endif %}
+
+                        <div class="mt-auto">
+                            {% for tech in item.techs %}
+                            <span class="tech-badge">{{ tech }}</span>
+                            {% else %}
+                            <span class="tech-badge" style="background: transparent; border: 1px dashed #ced4da; color: #adb5bd;">No tech detected</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <footer class="footer text-center">
+            <small>by <a href="https://github.com/B0fill3" target="_blank">b0fill3</a></small>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
