@@ -10,57 +10,32 @@
 
 *   **⚡ Asynchronous & Fast:** Built with `asyncio` and `Playwright` for high-performance concurrent scanning.
 *   **📸 Smart Screenshots:** Automatically follows redirects and captures the final destination URL.
-*   **🕵️ Tech Detection:** Identifies technologies (CMS, Web Servers, Frameworks) using `webtech` on the final resolved URL.
+*   **🕵️ Optional Tech Detection:** Identifies technologies (CMS, Web Servers, Frameworks) using `webtech` with the `-d` flag.
 *   **🔄 Redirect Tracking:** Captures the initial status code (e.g., 302) and tracks where the user is redirected.
 *   **📊 Modern HTML Report:** Generates a beautiful, responsive report with linkable screenshots and detailed metadata.
 *   **🚀 Auto-Open:** Option to automatically open the report in your browser upon completion.
 
 ## 🛠️ Installation
-
-### Local Installation
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/B0fill3/pyWebShotX.git
-    cd pyWebShotX
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3.  **Install Playwright browsers:**
-    ```bash
-    playwright install chromium
-    ```
-
-## 💻 Usage
-
-### Basic Scan
-Create a text file (e.g., `subdomains.txt`) with a list of URLs or domains to scan.
-
-```bash
-python pyWebShotx.py -i subdomains.txt
-```
-
+...
 ### Full Options
 ```bash
-python pyWebShotx.py --input <file> --output <dir> --concurrency <int> --results
+python pyWebShotx.py --input <file> --output <dir> --concurrency <int> --results --detection
 ```
 
 | Option | Short | Description | Default |
 | :--- | :--- | :--- | :--- |
 | `--input` | `-i` | **Required.** Path to the file containing the list of subdomains. | - |
 | `--output` | `-o` | Directory where screenshots and the report will be saved. | `output` |
-| `--concurrency` | `-c` | Number of simultaneous tabs/browsers to use. | `5` |
+| `--concurrency` | `-c` | Number of simultaneous tabs/browsers to use. | `30` |
 | `--results` | `-r` | Automatically open the report in the default browser when finished. | `False` |
+| `--detection` | `-d` | Enable technology stack detection using webtech. | `False` |
+| `--timeout` | `-t` | Timeout in seconds for each request. | `5` |
 
 ### Example
-Scan `subs.txt`, save to `my_scan/`, use 10 threads, and open the report immediately:
+Scan `subs.txt`, save to `my_scan/`, use 10 threads, enable tech detection, set timeout to 10s, and open the report immediately:
 
 ```bash
-python pyWebShotx.py -i subs.txt -o my_scan -c 10 -r
+python pyWebShotx.py -i subs.txt -o my_scan -c 10 -r -d -t 10
 ```
 
 ## 📝 Report

@@ -6,6 +6,8 @@
     <title>pyWebShotX Scan Report</title>
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
@@ -28,6 +30,42 @@
             letter-spacing: -0.5px;
             color: #1a1a1a;
         }
+        
+        /* Stats Cards */
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            height: 100%;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+            color: #1a1a1a;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
 
         .card {
             border: none;
@@ -38,7 +76,6 @@
             height: 100%;
             overflow: hidden;
         }
-
         .card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
@@ -141,8 +178,63 @@
             <p class="text-muted">Automated reconnaissance results</p>
         </header>
 
+        {# --- Stats Dashboard --- #}
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3 mb-5">
+            <!-- Total -->
+            <div class="col">
+                <div class="stat-card">
+                    <div class="stat-icon bg-light text-primary">
+                        <i class="bi bi-globe"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.total }}</div>
+                    <div class="stat-label">Total Targets</div>
+                </div>
+            </div>
+            <!-- Success -->
+            <div class="col">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #d1fae5; color: #065f46;">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.success }}</div>
+                    <div class="stat-label">Successful</div>
+                </div>
+            </div>
+            <!-- Redirects -->
+            <div class="col">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #e0f2fe; color: #0369a1;">
+                        <i class="bi bi-shuffle"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.redirects }}</div>
+                    <div class="stat-label">Redirects</div>
+                </div>
+            </div>
+            <!-- Timeouts -->
+            <div class="col">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #ffedd5; color: #9a3412;">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.timeouts }}</div>
+                    <div class="stat-label">Timeouts</div>
+                </div>
+            </div>
+            <!-- Other Failures -->
+            <div class="col">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #fee2e2; color: #991b1b;">
+                        <i class="bi bi-x-octagon"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.errors - stats.timeouts }}</div>
+                    <div class="stat-label">Other Errors</div>
+                </div>
+            </div>
+        </div>
+
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for item in results %}
+            {% if not item.error %}
             <div class="col">
                 <div class="card">
                     <div class="screenshot-wrapper">
@@ -194,12 +286,6 @@
                             {% endif %}
                         </h6>
                         
-                        {% if item.error %}
-                        <div class="alert alert-danger py-1 px-2 mb-3" style="font-size: 0.75rem; border-radius: 6px;">
-                            {{ item.error }}
-                        </div>
-                        {% endif %}
-
                         <div class="mt-auto">
                             {% for tech in item.techs %}
                             <span class="tech-badge">{{ tech }}</span>
@@ -210,8 +296,37 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
             {% endfor %}
         </div>
+        
+        <!-- Failed Scans Section -->
+        {% set failed_items = [] %}
+        {% for item in results %}
+            {% if item.error %}
+                {% set _ = failed_items.append(item) %}
+            {% endif %}
+        {% endfor %}
+
+        {% if failed_items %}
+        <div class="mt-5">
+            <h3 class="mb-4 text-secondary border-bottom pb-2">Failed Scans</h3>
+            <div class="d-flex flex-column gap-3">
+                {% for item in failed_items %}
+                <div class="card border-0 shadow-sm border-start border-4 border-danger" style="background-color: #fff5f5;">
+                    <div class="card-body py-3">
+                        <h6 class="card-title font-monospace mb-2">
+                            <a href="{{ item.url }}" target="_blank" class="text-decoration-none text-dark">{{ item.url }}</a>
+                        </h6>
+                        <p class="card-text text-danger small mb-0 font-monospace">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ item.error }}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
         
         <footer class="footer text-center">
             <small>by <a href="https://github.com/B0fill3" target="_blank">b0fill3</a></small>

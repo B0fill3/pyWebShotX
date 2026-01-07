@@ -5,9 +5,10 @@ import os
 from src.utils.logger import console
 
 class ScreenshotManager:
-    def __init__(self, output_dir: str, concurrency: int = 5):
+    def __init__(self, output_dir: str, concurrency: int = 5, timeout: int = 5):
         self.output_dir = output_dir
         self.concurrency = concurrency
+        self.timeout = timeout * 1000 # Convert to ms for Playwright
         self.semaphore = asyncio.Semaphore(concurrency)
         self.browser = None
         self.context = None
@@ -27,12 +28,15 @@ class ScreenshotManager:
 
     async def stop(self):
         """Closes the browser."""
-        if self.context:
-            await self.context.close()
-        if self.browser:
-            await self.browser.close()
-        if self.playwright:
-            await self.playwright.stop()
+        try:
+            if self.context:
+                await self.context.close()
+            if self.browser:
+                await self.browser.close()
+            if self.playwright:
+                await self.playwright.stop()
+        except Exception:
+            pass
 
     async def capture(self, url: str) -> Dict[str, Any]:
         """Takes a screenshot of the given URL and extracts metadata."""
@@ -61,7 +65,7 @@ class ScreenshotManager:
                 
                 # Navigate
                 # We use wait_until="networkidle" to ensure redirects are followed
-                response = await page.goto(target_url, timeout=30000, wait_until="networkidle")
+                response = await page.goto(target_url, timeout=self.timeout, wait_until="networkidle")
                 
                 if response:
                     # Logic to get the FIRST status code (e.g., 301/302) instead of the final 200

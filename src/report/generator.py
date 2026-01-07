@@ -13,7 +13,28 @@ class ReportGenerator:
         """Generates the HTML report from the results."""
         template = self.env.get_template('report.html')
         
-        html_content = template.render(results=results)
+        # Calculate statistics
+        stats = {
+            "total": len(results),
+            "success": 0,
+            "redirects": 0,
+            "timeouts": 0,
+            "errors": 0
+        }
+        
+        for item in results:
+            if item.get("error"):
+                stats["errors"] += 1
+                if "Timeout" in str(item["error"]) or "timeout" in str(item["error"]):
+                    stats["timeouts"] += 1
+            else:
+                stats["success"] += 1
+            
+            status = item.get("status", 0)
+            if 300 <= status < 400:
+                stats["redirects"] += 1
+        
+        html_content = template.render(results=results, stats=stats)
         
         output_path = os.path.join(self.output_dir, 'report.html')
         with open(output_path, 'w', encoding='utf-8') as f:
