@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "A robust bugbounty tool for automated subdomain screenshots and technology detection."
 readme = "README.md"
 authors = [
-  { name = "B0fill3", email = "tu-email@ejemplo.com" },
+  { name = "B0fill3", email = "B0fill3@users.noreply.github.com" },
 ]
 license = { text = "MIT" }
 classifiers = [
